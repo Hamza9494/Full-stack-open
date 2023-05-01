@@ -1,0 +1,54 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "HTML is easy",
+      "important": true
+    },
+    {
+      "id": 2,
+      "content": "Browser can execute only JavaScript",
+      "important": false
+    },
+    {
+      "id": 3,
+      "content": "GET and POST are the most important methods of HTTP protocol",
+      "important": true
+    },
+    {
+      "content": "I will keep pushing ",
+      "important": false,
+      "id": 4
+    },
+    {
+      "content": "it's coming along but taking time ",
+      "important": true,
+      "id": 5
+    },
+    {
+      "content": "dfaq",
+      "important": false,
+      "id": 6
+    },
+    {
+      "content": "updating after adding ",
+      "important": false,
+      "id": 7
+    },
+    {
+      "content": "i am focusing for too long that i got dizzy",
+      "important": true,
+      "id": 8
+    },
+    {
+      "content": "duh i feel dizzy",
+      "important": true,
+      "id": 9
+    },
+    {
+      "content": "me checking the react state thing ",
+      "important": false,
+      "id": 10
+    }
+  ]
+}

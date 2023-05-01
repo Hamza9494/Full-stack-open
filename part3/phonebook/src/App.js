@@ -1,41 +1,54 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import axios from 'axios'
+import Connect from './services/Connect'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 },
-  ])
-
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [number, setNumber] = useState('')
   const [search, setSearch] = useState('')
 
+  useEffect(() => {
+    Connect.getAll().then((initialPersons) => setPersons(initialPersons))
+  }, [])
+
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    // const duplicate = persons.find((person) => person.name === newName)
-    // if (duplicate) {
-    //   alert(`${duplicate.name} already exists my dude`)
-    //   return
-    // }
-
     if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} already exists my dude`)
-      setNewName('')
+      // alert(`${newName} already exists my dude`)
+      // setNewName('')
+
+      const person = persons.filter((person) => person.name === newName)
+      const personId = person[0].id
+      const personInfo = persons.find((person) => person.id === personId)
+      const updatedPerson = { ...personInfo, number }
+      if (window.confirm(`${newName} already exist wanna update the number?`)) {
+        Connect.update(personId, updatedPerson).then((updatedPerson) =>
+          setPersons(
+            persons.map((person) =>
+              person.id !== personId ? person : updatedPerson
+            )
+          )
+        )
+      }
       return
     }
 
-    const dude = {
+    const contact = {
       name: newName,
       number,
     }
-    setPersons(persons.concat(dude))
+
+    Connect.create(contact).then((addedPerson) =>
+      setPersons(persons.concat(addedPerson))
+    )
+    // setPersons(persons.concat(dude))
     setNewName('')
+    setNumber('')
   }
 
   const handelNameChange = (e) => {
@@ -47,6 +60,13 @@ const App = () => {
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
+  }
+
+  const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:3001/persons/${id}`)
+      .then((res) => setPersons(persons.filter((person) => person.id !== id)))
+      .catch((err) => alert(err.message))
   }
   return (
     <div>
@@ -62,7 +82,7 @@ const App = () => {
         handleSubmit={handleSubmit}
       />
       <h3>Numbers</h3>
-      <Persons search={search} persons={persons} />
+      <Persons search={search} persons={persons} handleDelete={handleDelete} />
     </div>
   )
 }
