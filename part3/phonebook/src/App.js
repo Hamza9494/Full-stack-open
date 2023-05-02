@@ -4,12 +4,14 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import axios from 'axios'
 import Connect from './services/Connect'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [number, setNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     Connect.getAll().then((initialPersons) => setPersons(initialPersons))
@@ -27,12 +29,17 @@ const App = () => {
       const personInfo = persons.find((person) => person.id === personId)
       const updatedPerson = { ...personInfo, number }
       if (window.confirm(`${newName} already exist wanna update the number?`)) {
-        Connect.update(personId, updatedPerson).then((updatedPerson) =>
-          setPersons(
-            persons.map((person) =>
-              person.id !== personId ? person : updatedPerson
-            )
-          )
+        Connect.update(personId, updatedPerson).then(
+          (updatedPerson) =>
+            setPersons(
+              persons.map((person) =>
+                person.id !== personId ? person : updatedPerson
+              )
+            ),
+          setErrorMessage(`${newName} updated Successfully`),
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         )
       }
       return
@@ -43,8 +50,12 @@ const App = () => {
       number,
     }
 
-    Connect.create(contact).then((addedPerson) =>
-      setPersons(persons.concat(addedPerson))
+    Connect.create(contact).then(
+      (addedPerson) => setPersons(persons.concat(addedPerson)),
+      setErrorMessage(`${contact.name} Added Successfully`),
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     )
     // setPersons(persons.concat(dude))
     setNewName('')
@@ -71,6 +82,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
+
       <Filter search={search} handleSearch={handleSearch} />
 
       <h3>Add a new</h3>
